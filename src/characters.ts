@@ -70,7 +70,7 @@ export async function CharacterSelect(i: StringSelectMenuInteraction) {
 		.addOptions(
 			json.map((x: any) => ({
 				label: x.name,
-				description: x.description,
+				description: x.place,
 				value: x.id,
 			})),
 		);
