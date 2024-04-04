@@ -40,7 +40,7 @@ export async function CharacterCommand(i: ChatInputCommandInteraction) {
 		.addOptions(
 			json.map((x: any) => ({
 				label: x.name,
-				description: x.description,
+				description: x.place,
 				value: x.id,
 			})),
 		);
