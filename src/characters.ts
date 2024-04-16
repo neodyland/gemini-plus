@@ -52,7 +52,7 @@ export async function CharacterCommand(i: ChatInputCommandInteraction) {
 	const embed = new EmbedBuilder()
 		.setTitle("AIキャラクターを招待")
 		.setDescription("招待したいキャラクターを選択してください")
-        .setImage("https://cdn.mikn.dev/bot-assets/gemini/AICharSplash.png")
+		.setImage("https://cdn.mikn.dev/bot-assets/gemini/AICharSplash.png")
 		.setFooter({
 			text: "DISCLAIMER: All characters are owned by their respective rights holders. Neody is not affiliated with these owners in any way.",
 		})
@@ -110,7 +110,9 @@ export async function CharacterInvite(i: ButtonInteraction) {
 
 	const embed = new EmbedBuilder()
 		.setTitle("キャラクター招待")
-		.setDescription(`${character.name}がチャットに招待されました！\n\n:warning: キャラクターが言うことは全て作り話です！`)
+		.setDescription(
+			`${character.name}がチャットに招待されました！\n\n:warning: キャラクターが言うことは全て作り話です！`,
+		)
 		.setImage(character.image)
 		.setColor("#00ff00");
 

@@ -9,7 +9,7 @@ import {
 	StringSelectMenuInteraction,
 } from "discord.js";
 import { resetChat } from "./queue";
-import { model, visionModel, resolveImages } from "./model";
+import { model, ProModel, visionModel, resolveImages } from "./model";
 import { LLamaCppChat, resetLLamaCppChat } from "./llamacpp";
 import { imagineCommand, editButtonPress, editModalSubmit } from "./imagine";
 import {
@@ -143,9 +143,10 @@ async function askCommand(i: ChatInputCommandInteraction) {
 		);
 		await i.deferReply({ ephemeral });
 		resText = (await chatFn([question, ...images])).response.text();
-	} else if (modelName === "swallow") {
+	} else if (modelName === "gemini-1.5-pro") {
+		let chatFn = ProModel.generateContent.bind(model);
 		await i.deferReply({ ephemeral });
-		resText = await new LLamaCppChat().chat(question);
+		resText = (await chatFn([question])).response.text();
 	}
 	if (resText.length == 0) {
 		await i.editReply("AIからの返信がありませんでした");

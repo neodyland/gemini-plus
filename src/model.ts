@@ -3,7 +3,8 @@ import { evar } from "./var";
 import { request } from "undici";
 
 const genAI = new GoogleGenerativeAI(evar("GEMINI_KEY"));
-export const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+export const model = genAI.getGenerativeModel({ model: "gemini-1.0-pro" });
+export const ProModel = genAI.getGenerativeModel({ model: "gemini-1.5-pro" });
 export const visionModel = genAI.getGenerativeModel({
 	model: "gemini-pro-vision",
 });

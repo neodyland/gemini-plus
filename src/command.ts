@@ -12,11 +12,28 @@ export const commands = [
 		.setName("clear")
 		.setDescription("AIチャットをリセットします"),
 	new SlashCommandBuilder()
+		.setName("wolfram")
+		.setDescription("Wolfram Alphaに質問します")
+		.addStringOption((x) =>
+			x.setName("text").setDescription("質問する内容").setRequired(true),
+		)
+		.addStringOption((x) =>
+		x
+			.setName("format")
+			.setDescription("出力形式を指定します")
+			.setRequired(false)
+			.addChoices(
+				{ name: "分析画像", value: "image" },
+				{ name: "短文", value: "short" },
+			),
+		),
+	new SlashCommandBuilder()
 		.setName("ask")
 		.setDescription("AIに質問します")
 		.addStringOption((x) =>
 			x.setName("text").setDescription("質問する内容").setRequired(true),
 		)
+
 		.addAttachmentOption((x) =>
 			x.setName("attachment").setDescription("質問する画像").setRequired(false),
 		)
@@ -26,8 +43,8 @@ export const commands = [
 				.setDescription("モデルを指定します")
 				.setRequired(false)
 				.addChoices(
-					{ name: "Gemini", value: "gemini-pro" },
-					{ name: "Swallow", value: "swallow" },
+					{ name: "Gemini 1.0 Pro", value: "gemini-pro" },
+					{ name: "Gemini 1.5 Pro", value: "gemini-1.5-pro" },
 				),
 		)
 		.addBooleanOption((x) =>

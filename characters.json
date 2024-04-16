@@ -26,7 +26,7 @@
 		"image": "https://cdn.mikn.dev/bot-assets/gemini/characters/frieren.jpg",
 		"copyright": "© 山田鐘人・アベツカサ／小学館／「葬送のフリーレン」製作委員会"
 	},
-    {
+	{
 		"id": "anya",
 		"name": "アーニャ・フォージャー",
 		"place": "SPY×FAMILY",
@@ -35,7 +35,7 @@
 		"image": "https://cdn.mikn.dev/bot-assets/gemini/characters/anya.webp",
 		"copyright": "© 遠藤達哉／集英社・SPY×FAMILY製作委員会"
 	},
-    {
+	{
 		"id": "hikakin",
 		"name": "開發光 (HikakinTV)",
 		"place": "ユーチューバー",
