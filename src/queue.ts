@@ -1,6 +1,6 @@
 import { ChatSession } from "@google/generative-ai";
 import { Collection, Message } from "discord.js";
-import { model, resolveImages, visionModel } from "./model";
+import { model, resolveImages, visionModel } from "./gemini";
 
 const geminiQueues = new Collection<
 	string,
@@ -43,7 +43,7 @@ export async function pushQueue(
 		return;
 	}
 	geminiQueue.push({ text, message, attachments });
-	let vision = attachments.length;
+	const vision = attachments.length;
 	while (geminiQueue.length) {
 		const { text, message, attachments } = geminiQueue.shift()!;
 		let chatFn = chat.sendMessageStream.bind(chat);
@@ -64,7 +64,7 @@ export async function pushQueue(
 					await msg.edit(resText);
 				}
 			}
-			if (resText.length == 0) {
+			if (resText.length === 0) {
 				await msg.edit("AIからの返信がありませんでした");
 				continue;
 			}
@@ -73,7 +73,6 @@ export async function pushQueue(
 					content: "長文です",
 					files: [{ attachment: Buffer.from(resText), name: "reply.txt" }],
 				});
-				continue;
 			}
 		} catch (err: any) {
 			try {

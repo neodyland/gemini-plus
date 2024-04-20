@@ -9,41 +9,33 @@ import {
 	StringSelectMenuInteraction,
 } from "discord.js";
 import { resetChat } from "./queue";
-import { model, ProModel, visionModel, resolveImages } from "./model";
-import { LLamaCppChat, resetLLamaCppChat } from "./llamacpp";
-import { imagineCommand, editButtonPress, editModalSubmit } from "./imagine";
+import { model, model1_5, visionModel, resolveImages } from "./gemini";
+import { req, resetLLamaCppChat } from "./llamacpp";
 import {
-	CharacterCommand,
-	CharacterSelect,
-	CharacterInvite,
+	characterSelect,
+	characterInvite,
+	characterCommand,
 } from "./characters";
 
 export async function onMenu(i: StringSelectMenuInteraction) {
 	if (i.customId === "characters-select") {
-		await CharacterSelect(i);
+		await characterSelect(i);
 	}
 }
 
 export async function onButton(i: ButtonInteraction) {
-	if (i.customId === "imagine-edit") {
-		await editButtonPress(i);
-	}
 	if (i.customId.startsWith("characters-select-")) {
-		await CharacterInvite(i);
+		await characterInvite(i);
 	}
 }
 
-export async function onModal(i: ModalSubmitInteraction) {
-	if (i.customId === "imagine-edit") {
-		await editModalSubmit(i);
-	}
-}
+export async function onModal(i: ModalSubmitInteraction) {}
 
 export async function onInetraction(i: ChatInputCommandInteraction) {
 	try {
 		switch (i.commandName) {
 			case "characters":
-				await CharacterCommand(i);
+				await characterCommand(i);
 				break;
 			case "help":
 				await helpCommand(i);
@@ -56,9 +48,6 @@ export async function onInetraction(i: ChatInputCommandInteraction) {
 				break;
 			case "ask":
 				await askCommand(i);
-				break;
-			case "imagine":
-				await imagineCommand(i);
 				break;
 			default:
 				await i.reply("不明なコマンドです");
@@ -138,17 +127,25 @@ async function askCommand(i: ChatInputCommandInteraction) {
 							url: attachment.url,
 							mime: attachment.contentType || "image/png",
 						},
-					]
+				  ]
 				: [],
 		);
 		await i.deferReply({ ephemeral });
 		resText = (await chatFn([question, ...images])).response.text();
 	} else if (modelName === "gemini-1.5-pro") {
-		let chatFn = ProModel.generateContent.bind(model);
+		const chatFn = model1_5.generateContent.bind(model);
 		await i.deferReply({ ephemeral });
 		resText = (await chatFn([question])).response.text();
+	} else if (modelName === "llama-3-8b-instruct") {
+		await i.deferReply({ ephemeral });
+		resText = await req([
+			{
+				role: "user",
+				content: question,
+			},
+		]);
 	}
-	if (resText.length == 0) {
+	if (resText.length === 0) {
 		await i.editReply("AIからの返信がありませんでした");
 		return;
 	}

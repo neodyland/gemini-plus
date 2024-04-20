@@ -5,23 +5,15 @@ import {
 	ButtonBuilder,
 	ButtonStyle,
 	ButtonInteraction,
-	ModalBuilder,
-	TextInputBuilder,
-	TextInputStyle,
-	ModalSubmitInteraction,
-	Embed,
 	EmbedBuilder,
 	StringSelectMenuInteraction,
 	Message,
 } from "discord.js";
 
 import { resetChat, pushQueue } from "./queue";
+import { characters } from "./data/characters";
 
-import fs from "node:fs";
-
-export async function CharacterCommand(i: ChatInputCommandInteraction) {
-	const json = JSON.parse(fs.readFileSync("./characters.json", "utf-8"));
-
+export async function characterCommand(i: ChatInputCommandInteraction) {
 	if (
 		!i.channel ||
 		!("topic" in i.channel) ||
@@ -38,7 +30,7 @@ export async function CharacterCommand(i: ChatInputCommandInteraction) {
 		.setCustomId("characters-select")
 		.setPlaceholder("キャラクターを選択")
 		.addOptions(
-			json.map((x: any) => ({
+			characters.map((x) => ({
 				label: x.name,
 				description: x.place,
 				value: x.id,
@@ -61,14 +53,12 @@ export async function CharacterCommand(i: ChatInputCommandInteraction) {
 	await i.reply({ embeds: [embed], components: [row] });
 }
 
-export async function CharacterSelect(i: StringSelectMenuInteraction) {
-	const json = JSON.parse(fs.readFileSync("./characters.json", "utf-8"));
-
+export async function characterSelect(i: StringSelectMenuInteraction) {
 	const menu = new StringSelectMenuBuilder()
 		.setCustomId("characters-select")
 		.setPlaceholder("キャラクターを選択")
 		.addOptions(
-			json.map((x: any) => ({
+			characters.map((x) => ({
 				label: x.name,
 				description: x.place,
 				value: x.id,
@@ -79,7 +69,7 @@ export async function CharacterSelect(i: StringSelectMenuInteraction) {
 		menu,
 	);
 
-	const character = json.find((x: any) => x.id === i.values[0]);
+	const character = characters.find((x) => x.id === i.values[0])!;
 
 	const button = new ButtonBuilder()
 		.setCustomId(`characters-select-${character.id}`)
@@ -101,10 +91,10 @@ export async function CharacterSelect(i: StringSelectMenuInteraction) {
 	await i.update({ embeds: [embed], components: [row, menuRow] });
 }
 
-export async function CharacterInvite(i: ButtonInteraction) {
-	const json = JSON.parse(fs.readFileSync("./characters.json", "utf-8"));
-
-	const character = json.find((x: any) => x.id === i.customId.split("-")[2]);
+export async function characterInvite(i: ButtonInteraction) {
+	const character = characters.find(
+		(x: any) => x.id === i.customId.split("-")[2],
+	)!;
 
 	const preprompt = character.preprompt;
 

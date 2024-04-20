@@ -18,14 +18,14 @@ export const commands = [
 			x.setName("text").setDescription("質問する内容").setRequired(true),
 		)
 		.addStringOption((x) =>
-		x
-			.setName("format")
-			.setDescription("出力形式を指定します")
-			.setRequired(false)
-			.addChoices(
-				{ name: "分析画像", value: "image" },
-				{ name: "短文", value: "short" },
-			),
+			x
+				.setName("format")
+				.setDescription("出力形式を指定します")
+				.setRequired(false)
+				.addChoices(
+					{ name: "分析画像", value: "image" },
+					{ name: "短文", value: "short" },
+				),
 		),
 	new SlashCommandBuilder()
 		.setName("ask")
@@ -45,58 +45,13 @@ export const commands = [
 				.addChoices(
 					{ name: "Gemini 1.0 Pro", value: "gemini-pro" },
 					{ name: "Gemini 1.5 Pro", value: "gemini-1.5-pro" },
+					{ name: "Llama 3 8b Instruct", value: "llama-3-8b-instruct" },
 				),
 		)
 		.addBooleanOption((x) =>
 			x
 				.setName("ephemeral")
 				.setDescription("あなたにしか見えなくします")
-				.setRequired(false),
-		),
-	new SlashCommandBuilder()
-		.setName("imagine")
-		.setDescription("画像を生成します")
-		.addStringOption((x) =>
-			x
-				.setName("positive")
-				.setDescription("生成する画像の内容")
-				.setRequired(true),
-		)
-		.addIntegerOption((x) =>
-			x
-				.setName("count")
-				.setDescription("生成する画像の数")
-				.setRequired(false)
-				.setMaxValue(16)
-				.setMinValue(1),
-		)
-		.addStringOption((x) =>
-			x
-				.setName("negative")
-				.setDescription("生成しない画像の内容")
-				.setRequired(false),
-		)
-		.addIntegerOption((x) =>
-			x
-				.setName("size")
-				.setDescription("生成する画像のサイズ")
-				.setRequired(false)
-				.setMinValue(64)
-				.setMaxValue(4096),
-		)
-		.addIntegerOption((x) =>
-			x
-				.setName("seed")
-				.setDescription("生成する画像のシード")
-				.setRequired(false),
-		)
-		.addAttachmentOption((x) =>
-			x.setName("base").setDescription("ベース画像").setRequired(false),
-		)
-		.addBooleanOption((x) =>
-			x
-				.setName("fast")
-				.setDescription("高速画像生成を使用します")
 				.setRequired(false),
 		),
 ];

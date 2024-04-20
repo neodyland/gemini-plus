@@ -1,22 +1,25 @@
 import { Message } from "discord.js";
 import { evar } from "./var";
+import { request } from "undici";
 
 const endpoint = evar("LLAMA_CPP_ENDPOINT");
 
-async function req(
+export async function req(
 	prompt: {
 		role: string;
 		content: string;
 	}[],
 ): Promise<string> {
-	const res = await fetch(endpoint, {
+	const res = await request(endpoint, {
 		method: "POST",
 		headers: {
 			"Content-Type": "application/json",
 		},
 		body: JSON.stringify(prompt),
 	});
-	const data = await res.json();
+	const data = (await res.body.json()) as {
+		content: string;
+	};
 	return data.content;
 }
 
@@ -26,7 +29,7 @@ const reqQueue: {
 }[] = [];
 
 async function reqWithQueue(prompt: { role: string; content: string }[]) {
-	return new Promise<string>((resolve, reject) => {
+	return new Promise<string>((resolve, _reject) => {
 		reqQueue.push({
 			prompt,
 			callback: (data) => {
@@ -48,17 +51,16 @@ async function reqWithQueue(prompt: { role: string; content: string }[]) {
 
 export class LLamaCppChat {
 	history: { user: string; message: string }[] = [];
-	constructor() {}
 	async chat(message: string): Promise<string> {
 		this.history.push({ user: "user", message });
 		try {
 			const data = await reqWithQueue(
 				this.history.map((x) => ({
-					role: x.user === "user" ? "user" : "assistant",
+					role: x.user,
 					content: x.message,
 				})),
 			);
-			this.history.push({ user: "bot", message: data });
+			this.history.push({ user: "assistant", message: data });
 			return data;
 		} catch (e: any) {
 			return `エラーが発生しました: ${e.toString()}`;
@@ -99,7 +101,7 @@ export async function pushLLamaCppQueue(
 		const { text, message } = queue.shift()!;
 		const msg = await message.reply("ラマは思考しています...");
 		const resText = await chat.chat(text);
-		if (resText.length == 0) {
+		if (resText.length === 0) {
 			await msg.edit("ラマは疲れているようです...");
 			continue;
 		}

@@ -18,7 +18,7 @@ const client = new Client({
 
 client.once(Events.ClientReady, async () => {
 	if (client.user !== null) {
-		console.log("Ready as " + client.user.tag);
+		console.log(`Ready as ${client.user.tag}`);
 		client.user.setActivity({
 			name: "AIとお話し中",
 			state: "aichatがトピックに含まれてるチャンネルでメッセージを送信",
@@ -34,7 +34,7 @@ client.once(Events.ClientReady, async () => {
 			});
 		}, 1000 * 60);
 	}
-	//set command
+	// set command
 	await client.application!.commands.set(commands);
 });
 
