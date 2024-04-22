@@ -1,6 +1,5 @@
 import { Message } from "discord.js";
 import { evar } from "./var";
-import { request } from "undici";
 
 const endpoint = evar("LLAMA_CPP_ENDPOINT");
 
@@ -10,17 +9,15 @@ export async function req(
 		content: string;
 	}[],
 ): Promise<string> {
-	const res = await request(endpoint, {
+	const res = await fetch(endpoint, {
 		method: "POST",
 		headers: {
 			"Content-Type": "application/json",
 		},
 		body: JSON.stringify(prompt),
 	});
-	const data = (await res.body.json()) as {
-		content: string;
-	};
-	return data.content;
+	const data = await res.json();
+	return JSON.stringify(data);
 }
 
 const reqQueue: {
@@ -29,7 +26,7 @@ const reqQueue: {
 }[] = [];
 
 async function reqWithQueue(prompt: { role: string; content: string }[]) {
-	return new Promise<string>((resolve, _reject) => {
+	return new Promise<string>((resolve, reject) => {
 		reqQueue.push({
 			prompt,
 			callback: (data) => {
@@ -51,16 +48,17 @@ async function reqWithQueue(prompt: { role: string; content: string }[]) {
 
 export class LLamaCppChat {
 	history: { user: string; message: string }[] = [];
+	constructor() {}
 	async chat(message: string): Promise<string> {
 		this.history.push({ user: "user", message });
 		try {
 			const data = await reqWithQueue(
 				this.history.map((x) => ({
-					role: x.user,
+					role: x.user === "user" ? "user" : "assistant",
 					content: x.message,
 				})),
 			);
-			this.history.push({ user: "assistant", message: data });
+			this.history.push({ user: "bot", message: data });
 			return data;
 		} catch (e: any) {
 			return `エラーが発生しました: ${e.toString()}`;
@@ -99,19 +97,24 @@ export async function pushLLamaCppQueue(
 	queue.push({ text: content, message });
 	while (queue.length) {
 		const { text, message } = queue.shift()!;
-		const msg = await message.reply("ラマは思考しています...");
-		const resText = await chat.chat(text);
-		if (resText.length === 0) {
+		const msg = await message.reply("ラマは思考しています... <a:discordloading:1225433214500343808>");
+		const res = await chat.chat(text);
+		const resJson = JSON.parse(res);
+		const resText = resJson.content;
+		const tokens = resJson.tokens;
+		const time = resJson.time.toFixed(2);
+		const tps = ((tokens / time).toFixed(2) as any) as number;
+		if (resText.length == 0) {
 			await msg.edit("ラマは疲れているようです...");
 			continue;
 		}
 		if (resText.length > 1900) {
 			await msg.edit({
-				content: "熟考しすぎてしまったようです",
+				content: "熟考しすぎてしまったようです\n\n:memo: ${tokens}T | :stopwatch: ${time}s | :zap: ${tps}TPS",
 				files: [{ attachment: Buffer.from(resText), name: "reply.txt" }],
 			});
 			continue;
 		}
-		await msg.edit(`ラマは元気に返事をしてくれました！\n${resText}`);
+		await msg.edit(`ラマは元気に返事をしてくれました！\n${resText}\n\n:memo: ${tokens}T | :stopwatch: ${time}s | :zap: ${tps}TPS`);
 	}
 }
