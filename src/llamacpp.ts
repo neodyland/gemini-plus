@@ -37,8 +37,8 @@ async function reqWithQueue(prompt: { role: string; content: string }[]) {
 			(async () => {
 				while (reqQueue.length) {
 					const { prompt, callback } = reqQueue[0];
-					const data = await req(prompt);
-					callback(data);
+					const dataJson = await req(prompt);
+					callback(dataJson);
 					reqQueue.shift();
 				}
 			})();
@@ -58,7 +58,9 @@ export class LLamaCppChat {
 					content: x.message,
 				})),
 			);
-			this.history.push({ user: "bot", message: data });
+			const resJson = JSON.parse(data);
+			const resText = resJson.content;
+			this.history.push({ user: "bot", message: resText });
 			return data;
 		} catch (e: any) {
 			return `エラーが発生しました: ${e.toString()}`;
@@ -99,6 +101,7 @@ export async function pushLLamaCppQueue(
 		const { text, message } = queue.shift()!;
 		const msg = await message.reply("ラマは思考しています... <a:discordloading:1225433214500343808>");
 		const res = await chat.chat(text);
+		console.log(res);
 		const resJson = JSON.parse(res);
 		const resText = resJson.content;
 		const tokens = resJson.tokens;
