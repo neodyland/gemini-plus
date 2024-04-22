@@ -113,7 +113,7 @@ export async function pushLLamaCppQueue(
 		}
 		if (resText.length > 1900) {
 			await msg.edit({
-				content: "熟考しすぎてしまったようです\n\n:memo: ${tokens}T | :stopwatch: ${time}s | :zap: ${tps}TPS",
+				content: `熟考しすぎてしまったようです\n\n:memo: ${tokens}T | :stopwatch: ${time}s | :zap: ${tps}TPS`,
 				files: [{ attachment: Buffer.from(resText), name: "reply.txt" }],
 			});
 			continue;
