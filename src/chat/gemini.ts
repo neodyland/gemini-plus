@@ -25,15 +25,17 @@ async function* generateGeminiContent(
 			parts: [
 				{
 					text: c.text,
-					...(c.attachment
-						? {
+				},
+				...(c.attachment
+					? [
+							{
 								inlineData: {
 									mimeType: c.attachment.mime,
 									data: c.attachment.data,
 								},
-							}
-						: {}),
-				},
+							},
+						]
+					: []),
 			],
 		})),
 		systemInstruction: system
@@ -81,6 +83,9 @@ async function* generateGeminiContent(
 					content: text,
 				};
 			}
+			if (chunk.name.includes("Value")) {
+				console.debug(chunk.name.slice(0, -5), chunk.value);
+			}
 		}
 	} catch (e) {
 		console.warn(e);
@@ -92,6 +97,11 @@ export const geminiPro: ChatModel = {
 	name: "Gemini 1.0 Pro",
 	id: "gemini-1.0-pro",
 	async generate(chat, system) {
+		for (const c of chat) {
+			if (c.attachment) {
+				throw new Error("Gemini 1.0 does not support attachments");
+			}
+		}
 		return generateGeminiContent(chat, "gemini-pro", system);
 	},
 };

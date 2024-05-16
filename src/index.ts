@@ -50,11 +50,12 @@ client.on(Events.InteractionCreate, async (i) => {
 		if (!command) return;
 		try {
 			await command.execute(i);
-		} catch (e) {
+		} catch (e: unknown) {
 			console.error(e);
-			if (i.deferred) i.followUp("Error");
-			else if (i.replied) i.editReply("Error");
-			else i.reply("Error");
+			const err = (e as Error).toString();
+			if (i.deferred) i.followUp(err);
+			else if (i.replied) i.editReply(err);
+			else i.reply(err);
 		}
 	}
 });
