@@ -1,9 +1,6 @@
 import { ActivityType, Client, Events, GatewayIntentBits } from "discord.js";
 import { evar } from "./var";
-import { pushQueue } from "./queue";
-import { onInetraction, onButton, onModal, onMenu } from "./i";
-import { commands } from "./command";
-import { pushLLamaCppQueue } from "./llamacpp";
+import { commands } from "./commands";
 
 const client = new Client({
 	intents:
@@ -35,7 +32,7 @@ client.once(Events.ClientReady, async () => {
 		}, 1000 * 60);
 	}
 	// set command
-	await client.application!.commands.set(commands);
+	await client.application!.commands.set(commands.map((x) => x.builder));
 });
 
 client.on(Events.MessageCreate, async (message) => {
@@ -44,35 +41,21 @@ client.on(Events.MessageCreate, async (message) => {
 		message.author?.bot
 	)
 		return;
-	if (!("topic" in message.channel) || !message.inGuild()) return;
-	if (!message.channel.topic?.includes("aichat")) return;
-	const content = message.content.trim();
-	if (content.startsWith("#")) return;
-	if (message.channel.topic?.includes("unlimited")) {
-		await pushLLamaCppQueue(content, message);
-	} else {
-		await pushQueue(
-			message,
-			content,
-			message.attachments
-				.filter((x) => x.height)
-				.map((x) => ({ url: x.url, mime: x.contentType || "image/png" })),
-		);
-	}
+	if (!message.inGuild()) return;
 });
 
 client.on(Events.InteractionCreate, async (i) => {
 	if (i.isChatInputCommand()) {
-		await onInetraction(i);
-	}
-	if (i.isButton()) {
-		await onButton(i);
-	}
-	if (i.isModalSubmit()) {
-		await onModal(i);
-	}
-	if (i.isStringSelectMenu()) {
-		await onMenu(i);
+		const command = commands.find((x) => x.builder.name === i.commandName);
+		if (!command) return;
+		try {
+			await command.execute(i);
+		} catch (e) {
+			console.error(e);
+			if (i.deferred) i.followUp("Error");
+			else if (i.replied) i.editReply("Error");
+			else i.reply("Error");
+		}
 	}
 });
 
