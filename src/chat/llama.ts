@@ -6,7 +6,7 @@ const endpoint = evar("LLAMA_CPP_ENDPOINT");
 
 async function* generate(chat: Chat[], system?: string) {
 	for (const c of chat) {
-		if(c.attachment) {
+		if (c.attachment) {
 			throw new Error("Llama3 does not support attachments");
 		}
 	}

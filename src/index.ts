@@ -1,8 +1,16 @@
-import { ActivityType, Client, Events, GatewayIntentBits } from "discord.js";
+import {
+	ActivityType,
+	Attachment,
+	Client,
+	Events,
+	GatewayIntentBits,
+} from "discord.js";
 import { evar } from "./var";
 import { commands } from "./commands";
+import { addChatQueue } from "./queue";
+import { getAttachmentBase64 } from "./chat";
 
-const client = new Client({
+export const client = new Client({
 	intents:
 		GatewayIntentBits.GuildMessages |
 		GatewayIntentBits.Guilds |
@@ -35,13 +43,38 @@ client.once(Events.ClientReady, async () => {
 	await client.application!.commands.set(commands.map((x) => x.builder));
 });
 
+const resolveAttachment = async (attachment: Attachment) => {
+	return {
+		mime: attachment.contentType!,
+		data: await getAttachmentBase64(attachment.url),
+	};
+};
+
 client.on(Events.MessageCreate, async (message) => {
 	if (
 		(!message.content.length && !message.attachments.size) ||
 		message.author?.bot
 	)
 		return;
-	if (!message.inGuild()) return;
+	if (
+		!message.inGuild() ||
+		!message.channel.isTextBased() ||
+		message.channel.isThread() ||
+		message.channel.isVoiceBased()
+	)
+		return;
+	if (!message.channel.topic?.includes("aichat")) return;
+	addChatQueue(message.channel.id, {
+		text: message.content,
+		role: "user",
+		attachment:
+			message.attachments.size > 0
+				? await resolveAttachment(message.attachments.first()!)
+				: undefined,
+		id: message.id,
+	});
+	// loading
+	message.react("🔄");
 });
 
 client.on(Events.InteractionCreate, async (i) => {
