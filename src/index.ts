@@ -64,6 +64,7 @@ client.on(Events.MessageCreate, async (message) => {
 	)
 		return;
 	if (!message.channel.topic?.includes("aichat")) return;
+	if (message.content.startsWith("#")) return;
 	addChatQueue(message.channel.id, {
 		text: message.content,
 		role: "user",
