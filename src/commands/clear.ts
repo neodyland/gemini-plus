@@ -4,6 +4,7 @@ import {
 	SlashCommandBuilder,
 } from "discord.js";
 import { Command } from ".";
+import { clearHistory } from "../queue";
 
 export const clear: Command = {
 	builder: new SlashCommandBuilder()
@@ -13,6 +14,7 @@ export const clear: Command = {
 	execute: function (
 		i: ChatInputCommandInteraction<CacheType>,
 	): void | Promise<void> {
-		throw new Error("Function not implemented.");
+		clearHistory(i.channelId);
+		i.reply("Chat history cleared");
 	},
 };

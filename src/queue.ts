@@ -15,6 +15,14 @@ function addHistory(channelId: string, chat: Chat) {
 	]);
 }
 
+export function clearHistory(channelId: string) {
+	channelSpecificHistory.set(channelId, []);
+	chatQueue.set(channelId, {
+		queue: [],
+		processing: false,
+	});
+}
+
 setInterval(() => {
 	for (const [channelId, { queue, processing }] of chatQueue) {
 		if (processing) continue;
