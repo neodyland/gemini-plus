@@ -65,15 +65,23 @@ client.on(Events.MessageCreate, async (message) => {
 		return;
 	if (!message.channel.topic?.includes("aichat")) return;
 	if (message.content.startsWith("#")) return;
-	addChatQueue(message.channel.id, {
-		text: message.content,
-		role: "user",
-		attachment:
-			message.attachments.size > 0
-				? await resolveAttachment(message.attachments.first()!)
-				: undefined,
-		id: message.id,
-	});
+	let model = "gemini-1.5-flash";
+	if (message.channel.topic?.includes("local")) {
+		model = "local";
+	}
+	addChatQueue(
+		message.channel.id,
+		{
+			text: message.content,
+			role: "user",
+			attachment:
+				message.attachments.size > 0
+					? await resolveAttachment(message.attachments.first()!)
+					: undefined,
+			id: message.id,
+		},
+		model,
+	);
 	// loading
 	message.react("🔄");
 });

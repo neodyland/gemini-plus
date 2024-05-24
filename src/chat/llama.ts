@@ -36,8 +36,8 @@ async function* generate(chat: Chat[], system?: string) {
 }
 
 export const llama: ChatModel = {
-	name: "Llama3 8b Instruct",
-	id: "llama-3-8b-instruct",
+	name: "Local Model",
+	id: "local",
 	async generate(chat, system) {
 		return generate(chat, system);
 	},
