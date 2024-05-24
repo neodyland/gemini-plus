@@ -99,4 +99,5 @@ export function addChatQueue(
 		});
 	}
 	chatQueue.get(channelId)!.queue.push(chat);
+	chatQueue.set(channelId, { ...chatQueue.get(channelId)!, model });
 }
