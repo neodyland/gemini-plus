@@ -23,7 +23,6 @@ async function* generate(chat: Chat[], system?: string) {
 		},
 		body: JSON.stringify(chat),
 	});
-	res.body.setEncoding("utf-8");
 	const data = JSON.parse(await res.body.text());
 	yield {
 		tokens: data.tokens,
