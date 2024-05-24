@@ -32,7 +32,7 @@ setInterval(() => {
 			queue,
 			processing: true,
 		});
-		const model = models.find((x) => x.id === modelId)!;
+		const model = models.find((x) => x.id === modelId || "gemini-1.5-flash")!;
 		model
 			.generate([...(channelSpecificHistory.get(channelId) || []), chat])
 			.then(async (res) => {
