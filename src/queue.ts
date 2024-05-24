@@ -5,7 +5,7 @@ import { client } from ".";
 const channelSpecificHistory = new Collection<string, Chat[]>();
 const chatQueue = new Collection<
 	string,
-	{ queue: (Chat & { id: string })[]; processing: boolean; model?: string }
+	{ queue: (Chat & { id: string })[]; processing: boolean; model: string }
 >();
 
 function addHistory(channelId: string, chat: Chat) {
@@ -20,6 +20,7 @@ export function clearHistory(channelId: string) {
 	chatQueue.set(channelId, {
 		queue: [],
 		processing: false,
+		model: "gemini-1.5-flash",
 	});
 }
 
@@ -31,6 +32,7 @@ setInterval(() => {
 		chatQueue.set(channelId, {
 			queue,
 			processing: true,
+			model: modelId,
 		});
 		const model = models.find((x) => x.id === modelId || "gemini-1.5-flash")!;
 		model
@@ -81,6 +83,7 @@ setInterval(() => {
 				chatQueue.set(channelId, {
 					queue,
 					processing: false,
+					model: modelId,
 				});
 			});
 	}
@@ -89,7 +92,7 @@ setInterval(() => {
 export function addChatQueue(
 	channelId: string,
 	chat: Chat & { id: string },
-	model?: string,
+	model: string,
 ) {
 	if (!chatQueue.has(channelId)) {
 		chatQueue.set(channelId, {
