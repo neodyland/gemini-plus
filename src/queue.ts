@@ -34,7 +34,7 @@ setInterval(() => {
 			processing: true,
 			model: modelId,
 		});
-		const model = models.find((x) => x.id === modelId || "gemini-1.5-flash")!;
+		const model = models.find((x) => x.id === modelId)!;
 		model
 			.generate([...(channelSpecificHistory.get(channelId) || []), chat])
 			.then(async (res) => {
