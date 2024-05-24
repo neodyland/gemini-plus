@@ -21,9 +21,14 @@ async function* generate(chat: Chat[], system?: string) {
 		headers: {
 			"Content-Type": "application/json",
 		},
-		body: JSON.stringify(chat),
+		body: JSON.stringify(
+			chat.map((c) => ({
+				content: c.text,
+				role: c.role,
+			})),
+		),
 	});
-	const data = JSON.parse(await res.body.text());
+	const data: any = await res.body.json();
 	yield {
 		tokens: data.tokens,
 		content: data.content,
