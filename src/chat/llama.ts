@@ -40,6 +40,7 @@ async function* generate(chat: Chat[], system?: string) {
 			})),
 		),
 	});
+	res.body.setEncoding("utf-8");
 	const stream = (await res.body.blob()).stream();
 	const reader = stream.getReader();
 	while (true) {
