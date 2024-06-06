@@ -41,8 +41,9 @@ async function* generate(chat: Chat[], system?: string) {
 		),
 	});
 	const stream = (await res.body.blob()).stream();
+	const reader = stream.getReader();
 	while (true) {
-		const { done, value } = await stream.getReader().read();
+		const { done, value } = await reader.read();
 		if (done) {
 			break;
 		}
