@@ -40,11 +40,17 @@ async function* generate(chat: Chat[], system?: string) {
 			})),
 		),
 	});
-	const data: any = await res.body.json();
-	yield {
-		tokens: data.tokens,
-		content: data.content,
-	};
+	const stream = (await res.body.blob()).stream();
+	while (true) {
+		const { done, value } = await stream.getReader().read();
+		if (done) {
+			break;
+		}
+		yield {
+			tokens: 1,
+			content: value,
+		};
+	}
 }
 
 export const llama: ChatModel = {
