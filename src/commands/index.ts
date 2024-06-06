@@ -7,10 +7,11 @@ import { ask } from "./ask";
 import { help } from "./help";
 import { clear } from "./clear";
 import { ping } from "./ping";
+import { image } from "./image";
 
 export interface Command {
 	builder: SlashCommandBuilder | SlashCommandOptionsOnlyBuilder;
 	execute: (i: ChatInputCommandInteraction) => void | Promise<void>;
 }
 
-export const commands = [ask, help, clear, ping];
+export const commands = [ask, help, clear, ping, image];

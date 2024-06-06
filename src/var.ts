@@ -6,3 +6,7 @@ export function evar(key: string) {
 	if (!value) throw new Error(`${key} not provided`);
 	return value;
 }
+
+export function evarOptional(key: string) {
+	return process.env[key];
+}
