@@ -1,8 +1,8 @@
 import { request } from "undici";
 import type { Chat, ChatModel } from ".";
-import { evar } from "../var";
+import { evarOptional } from "../var";
 
-const endpoint = evar("LLAMA_CPP_ENDPOINT");
+const endpoint = evarOptional("LLAMA_CPP_ENDPOINT");
 
 function resolveAttachment(attachment?: {
 	mime: string;
@@ -23,6 +23,9 @@ async function* generate(chat: Chat[], system?: string) {
 			role: "system",
 			text: system,
 		});
+	}
+	if (!endpoint) {
+		throw new Error("LLAMA_CPP_ENDPOINT not set");
 	}
 	const res = await request(endpoint, {
 		method: "POST",
