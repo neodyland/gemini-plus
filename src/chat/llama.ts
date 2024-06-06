@@ -42,6 +42,7 @@ async function* generate(chat: Chat[], system?: string) {
 	});
 	const stream = (await res.body.blob()).stream();
 	const reader = stream.getReader();
+	const dec = new TextDecoder();
 	while (true) {
 		const { done, value } = await reader.read();
 		if (done) {
@@ -49,7 +50,7 @@ async function* generate(chat: Chat[], system?: string) {
 		}
 		yield {
 			tokens: 1,
-			content: String.fromCharCode(...new Uint8Array(value)),
+			content: dec.decode(value),
 		};
 	}
 }
