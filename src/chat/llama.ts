@@ -4,12 +4,20 @@ import { evar } from "../var";
 
 const endpoint = evar("LLAMA_CPP_ENDPOINT");
 
-async function* generate(chat: Chat[], system?: string) {
-	for (const c of chat) {
-		if (c.attachment) {
-			throw new Error("Llama3 does not support attachments");
-		}
+function resolveAttachment(attachment?: {
+	mime: string;
+	data: string;
+}) {
+	if (!attachment) {
+		return;
 	}
+	if (["image/png", "image/jpeg", "image/gif"].includes(attachment.mime)) {
+		return attachment.data;
+	}
+	return;
+}
+
+async function* generate(chat: Chat[], system?: string) {
 	if (system) {
 		chat.unshift({
 			role: "system",
@@ -25,6 +33,7 @@ async function* generate(chat: Chat[], system?: string) {
 			chat.map((c) => ({
 				content: c.text,
 				role: c.role,
+				image: resolveAttachment(c.attachment),
 			})),
 		),
 	});
