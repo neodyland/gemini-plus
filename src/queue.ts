@@ -1,4 +1,4 @@
-import { BaseGuildTextChannel, Collection } from "discord.js";
+import { BaseGuildTextChannel, Collection, MessageEditOptions } from "discord.js";
 import { Chat, models } from "./chat";
 import { client } from ".";
 
@@ -66,7 +66,18 @@ setInterval(() => {
 							lastTokens = tokens;
 						}
 					}
-					await msg?.edit(contents);
+					const payload: MessageEditOptions = {};
+					if (contents.length < 2000) {
+						payload["content"] = contents;
+					} else {
+						payload["files"] = [
+							{
+								attachment: Buffer.from(contents),
+								name: "output.txt",
+							},
+						];
+					}
+					await msg?.edit(payload);
 					addHistory(channelId, chat);
 					addHistory(channelId, {
 						text: contents,
@@ -77,7 +88,7 @@ setInterval(() => {
 					if (msg) {
 						try {
 							await msg.edit("Failed to generate message");
-						} catch {}
+						} catch { }
 					}
 				}
 				chatQueue.set(channelId, {
