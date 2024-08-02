@@ -1,8 +1,5 @@
 import { request } from "undici";
-import {
-	gemini15Flash,
-	gemini15Pro,
-} from "./gemini";
+import { gemini15Flash, gemini15Pro } from "./gemini";
 
 export interface Chat {
 	role: "user" | "assistant" | "system";
@@ -27,10 +24,7 @@ export interface ChatModel {
 	id: string;
 }
 
-export const models = [
-	gemini15Flash,
-	gemini15Pro,
-];
+export const models = [gemini15Flash, gemini15Pro];
 
 export async function getAttachmentBase64(url: string) {
 	const res = await request(url);

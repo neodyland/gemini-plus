@@ -1,4 +1,8 @@
-import { BaseGuildTextChannel, Collection, MessageEditOptions } from "discord.js";
+import {
+	BaseGuildTextChannel,
+	Collection,
+	MessageEditOptions,
+} from "discord.js";
 import { Chat, models } from "./chat";
 import { client } from ".";
 
@@ -88,7 +92,7 @@ setInterval(() => {
 					if (msg) {
 						try {
 							await msg.edit("Failed to generate message");
-						} catch { }
+						} catch {}
 					}
 				}
 				chatQueue.set(channelId, {

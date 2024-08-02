@@ -65,7 +65,7 @@ async function* generateGeminiContent(
 		let isText = false;
 		let text = "";
 		let iscandidatesTokenCount = false;
-		for await (const chunk of parserStream.iterator()) {
+		for await (const chunk of parserStream) {
 			if (chunk.name === "keyValue" && chunk.value === "text") {
 				isText = true;
 			}
