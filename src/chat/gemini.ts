@@ -61,6 +61,7 @@ async function* generateGeminiContent(
 			},
 		);
 		const parserStream = parser();
+		//@ts-ignore
 		res.body.pipe(parserStream);
 		let isText = false;
 		let text = "";
