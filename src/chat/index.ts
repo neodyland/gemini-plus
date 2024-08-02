@@ -2,10 +2,7 @@ import { request } from "undici";
 import {
 	gemini15Flash,
 	gemini15Pro,
-	geminiPro,
-	geminiProVision,
 } from "./gemini";
-import { llama } from "./llama";
 
 export interface Chat {
 	role: "user" | "assistant" | "system";
@@ -31,11 +28,8 @@ export interface ChatModel {
 }
 
 export const models = [
-	geminiPro,
 	gemini15Flash,
 	gemini15Pro,
-	geminiProVision,
-	llama,
 ];
 
 export async function getAttachmentBase64(url: string) {

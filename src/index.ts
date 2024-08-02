@@ -66,9 +66,6 @@ client.on(Events.MessageCreate, async (message) => {
 	if (!message.channel.topic?.includes("aichat")) return;
 	if (message.content.startsWith("#")) return;
 	let model = "gemini-1.5-flash";
-	if (message.channel.topic?.includes("local")) {
-		model = "local";
-	}
 	addChatQueue(
 		message.channel.id,
 		{

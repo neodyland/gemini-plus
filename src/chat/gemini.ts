@@ -93,27 +93,6 @@ async function* generateGeminiContent(
 	}
 }
 
-export const geminiPro: ChatModel = {
-	name: "Gemini 1.0 Pro",
-	id: "gemini-1.0-pro",
-	async generate(chat, system) {
-		for (const c of chat) {
-			if (c.attachment) {
-				throw new Error("Gemini 1.0 does not support attachments");
-			}
-		}
-		return generateGeminiContent(chat, "gemini-pro", system);
-	},
-};
-
-export const geminiProVision: ChatModel = {
-	name: "Gemini 1.0 Pro Vision",
-	id: "gemini-pro-vision",
-	async generate(chat, system) {
-		return generateGeminiContent(chat, "gemini-pro-vision", system);
-	},
-};
-
 export const gemini15Pro: ChatModel = {
 	name: "Gemini 1.5 Pro",
 	id: "gemini-1.5-pro",
