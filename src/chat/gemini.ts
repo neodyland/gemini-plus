@@ -104,7 +104,7 @@ export const gemini15Pro: ChatModel = {
 
 export const gemini15Flash: ChatModel = {
 	name: "Gemini 1.5 Flash",
-	id: "gemini-1.5-flash-exp-0827",
+	id: "gemini-1.5-flash",
 	async generate(chat, system) {
 		return generateGeminiContent(chat, "gemini-1.5-flash-exp-0827", system);
 	},
@@ -112,7 +112,7 @@ export const gemini15Flash: ChatModel = {
 
 export const gemini15FlashSmall: ChatModel = {
 	name: "Gemini 1.5 Flash",
-	id: "gemini-1.5-flash-8b-exp-0827",
+	id: "gemini-1.5-flash-small",
 	async generate(chat, system) {
 		return generateGeminiContent(chat, "gemini-1.5-flash-8b-exp-0827", system);
 	},
