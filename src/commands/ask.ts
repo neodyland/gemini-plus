@@ -4,7 +4,7 @@ import {
 	SlashCommandBuilder,
 } from "discord.js";
 import { Command } from ".";
-import { getAttachmentBase64, models } from "../chat";
+import { uploadAttachment, models } from "../chat";
 
 export const ask: Command = {
 	builder: new SlashCommandBuilder()
@@ -62,10 +62,15 @@ export const ask: Command = {
 				role: "user" as const,
 				text: question,
 				attachment: attachment
-					? {
-							mime: attachment.contentType!,
-							data: await getAttachmentBase64(attachment.url),
-						}
+					? [
+							{
+								mime: attachment.contentType || "application/octet-stream",
+								data: await uploadAttachment(
+									attachment.url,
+									attachment.contentType || "application/octet-stream",
+								),
+							},
+						]
 					: undefined,
 			},
 		];

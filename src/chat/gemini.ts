@@ -1,60 +1,51 @@
 import type { Chat, ChatModel } from ".";
 import { evar } from "../var";
-import { parser } from "stream-json";
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import {
+	GoogleGenerativeAI,
+	HarmBlockThreshold,
+	HarmCategory,
+} from "@google/generative-ai";
+import { GoogleAIFileManager } from "@google/generative-ai/server";
 
 const geminiKey = evar("GEMINI_KEY");
 
 const ai = new GoogleGenerativeAI(geminiKey);
+export const files = new GoogleAIFileManager(geminiKey);
 
 async function* generateGeminiContent(
 	chat: Chat[],
 	model: string,
 	system?: string,
 ) {
-	const payload = {
-		safetySettings: [
-			"HARM_CATEGORY_SEXUALLY_EXPLICIT",
-			"HARM_CATEGORY_DANGEROUS_CONTENT",
-			"HARM_CATEGORY_HATE_SPEECH",
-			"HARM_CATEGORY_HARASSMENT",
-		].map((category) => ({
-			category,
-			threshold: "BLOCK_NONE",
-		})),
-		contents: chat.map((c) => ({
-			role: c.role === "user" ? "user" : "model",
-			parts: [
-				{
-					text: c.text,
-				},
-				...(c.attachment
-					? [
-							{
-								inlineData: {
-									mimeType: c.attachment.mime,
-									data: c.attachment.data,
-								},
-							},
-						]
-					: []),
-			],
-		})),
-		systemInstruction: system
-			? {
-					role: "model",
-					parts: [
-						{
-							text: system,
-						},
-					],
-				}
-			: undefined,
-	};
 	try {
 		const res = await ai
 			.getGenerativeModel({ model: model })
-			.generateContentStream(chat);
+			.generateContentStream({
+				safetySettings: [
+					HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
+					HarmCategory.HARM_CATEGORY_HARASSMENT,
+					HarmCategory.HARM_CATEGORY_HATE_SPEECH,
+					HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT,
+				].map((category) => ({
+					category,
+					threshold: HarmBlockThreshold.BLOCK_NONE,
+				})),
+				systemInstruction: system,
+				contents: chat.map((c) => ({
+					role: c.role === "user" ? "user" : "model",
+					parts: [
+						{
+							text: c.text,
+						},
+						...(c.attachment?.map((a) => ({
+							fileData: {
+								mimeType: a.mime,
+								fileUri: a.data,
+							},
+						})) || []),
+					],
+				})),
+			});
 		for await (const chunk of res.stream) {
 			yield {
 				tokens: 0,

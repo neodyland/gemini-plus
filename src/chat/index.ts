@@ -3,7 +3,10 @@ import {
 	gemini15FlashSmall,
 	gemini15Pro,
 	gemini20Flash,
+	files,
 } from "./gemini";
+import { writeFile, rm, mkdir, stat } from "node:fs/promises";
+import { randomUUID } from "node:crypto";
 
 export interface Chat {
 	role: "user" | "assistant" | "system";
@@ -11,7 +14,7 @@ export interface Chat {
 	attachment?: {
 		mime: string;
 		data: string;
-	}; // base64
+	}[]; // base64
 }
 
 export interface ChatModel {
@@ -35,9 +38,18 @@ export const models = [
 	gemini20Flash,
 ];
 
-export async function getAttachmentBase64(url: string) {
-	const res = await fetch(url);
-	const data = await res.blob();
-	const buf = Buffer.from(await data.arrayBuffer());
-	return buf.toString("base64");
+export async function uploadAttachment(url: string, mime: string) {
+	const buf = await (await fetch(url)).arrayBuffer();
+	try {
+		(await stat("./tmp")).isDirectory();
+	} catch {
+		await mkdir("./tmp");
+	}
+	const path = `./tmp/${randomUUID()}`;
+	await writeFile(path, Buffer.from(buf));
+	try {
+		return (await files.uploadFile(path, { mimeType: mime })).file.uri;
+	} finally {
+		await rm(path);
+	}
 }

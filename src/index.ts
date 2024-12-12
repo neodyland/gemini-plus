@@ -8,7 +8,7 @@ import {
 import { evar } from "./var";
 import { commands } from "./commands";
 import { addChatQueue } from "./queue";
-import { getAttachmentBase64 } from "./chat";
+import { uploadAttachment } from "./chat";
 
 export const client = new Client({
 	intents:
@@ -46,7 +46,10 @@ client.once(Events.ClientReady, async () => {
 const resolveAttachment = async (attachment: Attachment) => {
 	return {
 		mime: attachment.contentType!,
-		data: await getAttachmentBase64(attachment.url),
+		data: await uploadAttachment(
+			attachment.url,
+			attachment.contentType || "application/octet-stream",
+		),
 	};
 };
 
@@ -71,10 +74,9 @@ client.on(Events.MessageCreate, async (message) => {
 		{
 			text: message.content,
 			role: "user",
-			attachment:
-				message.attachments.size > 0
-					? await resolveAttachment(message.attachments.first()!)
-					: undefined,
+			attachment: await Promise.all(
+				message.attachments.map((a) => resolveAttachment(a)),
+			),
 			id: message.id,
 		},
 		model,
