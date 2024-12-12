@@ -1,5 +1,4 @@
-import { request } from "undici";
-import { gemini15Flash, gemini15FlashSmall, gemini15Pro } from "./gemini";
+import { gemini15Flash, gemini15FlashSmall, gemini15Pro, gemini20Flash } from "./gemini";
 
 export interface Chat {
 	role: "user" | "assistant" | "system";
@@ -24,11 +23,11 @@ export interface ChatModel {
 	id: string;
 }
 
-export const models = [gemini15Flash, gemini15Pro, gemini15FlashSmall];
+export const models = [gemini15Flash, gemini15Pro, gemini15FlashSmall, gemini20Flash];
 
 export async function getAttachmentBase64(url: string) {
-	const res = await request(url);
-	const data = await res.body.blob();
+	const res = await fetch(url);
+	const data = await res.blob();
 	const buf = Buffer.from(await data.arrayBuffer());
 	return buf.toString("base64");
 }

@@ -1,6 +1,5 @@
 import type { Chat, ChatModel } from ".";
 import { evar } from "../var";
-import { request } from "undici";
 import { parser } from "stream-json";
 
 const geminiKey = evar("GEMINI_KEY");
@@ -50,7 +49,7 @@ async function* generateGeminiContent(
 			: undefined,
 	};
 	try {
-		const res = await request(
+		const res = await fetch(
 			`https://generativelanguage.googleapis.com/v1beta/models/${model}:streamGenerateContent?key=${geminiKey}`,
 			{
 				method: "POST",
@@ -106,14 +105,22 @@ export const gemini15Flash: ChatModel = {
 	name: "Gemini 1.5 Flash",
 	id: "gemini-1.5-flash",
 	async generate(chat, system) {
-		return generateGeminiContent(chat, "gemini-1.5-flash-exp-0827", system);
+		return generateGeminiContent(chat, "gemini-1.5-flash-latest", system);
 	},
 };
 
 export const gemini15FlashSmall: ChatModel = {
-	name: "Gemini 1.5 Flash",
+	name: "Gemini 1.5 Flash 8b",
 	id: "gemini-1.5-flash-small",
 	async generate(chat, system) {
-		return generateGeminiContent(chat, "gemini-1.5-flash-8b-exp-0827", system);
+		return generateGeminiContent(chat, "gemini-1.5-flash-8b-latest", system);
+	},
+};
+
+export const gemini20Flash: ChatModel = {
+	name: "Gemini 2.0 Flash",
+	id: "gemini-2.0-flash",
+	async generate(chat, system) {
+		return generateGeminiContent(chat, "gemini-2.0-flash-exp", system);
 	},
 };
