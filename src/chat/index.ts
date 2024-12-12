@@ -1,4 +1,9 @@
-import { gemini15Flash, gemini15FlashSmall, gemini15Pro, gemini20Flash } from "./gemini";
+import {
+	gemini15Flash,
+	gemini15FlashSmall,
+	gemini15Pro,
+	gemini20Flash,
+} from "./gemini";
 
 export interface Chat {
 	role: "user" | "assistant" | "system";
@@ -23,7 +28,12 @@ export interface ChatModel {
 	id: string;
 }
 
-export const models = [gemini15Flash, gemini15Pro, gemini15FlashSmall, gemini20Flash];
+export const models = [
+	gemini15Flash,
+	gemini15Pro,
+	gemini15FlashSmall,
+	gemini20Flash,
+];
 
 export async function getAttachmentBase64(url: string) {
 	const res = await fetch(url);

@@ -1,8 +1,11 @@
 import type { Chat, ChatModel } from ".";
 import { evar } from "../var";
 import { parser } from "stream-json";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 
 const geminiKey = evar("GEMINI_KEY");
+
+const ai = new GoogleGenerativeAI(geminiKey);
 
 async function* generateGeminiContent(
 	chat: Chat[],
@@ -49,44 +52,14 @@ async function* generateGeminiContent(
 			: undefined,
 	};
 	try {
-		const res = await fetch(
-			`https://generativelanguage.googleapis.com/v1beta/models/${model}:streamGenerateContent?key=${geminiKey}`,
-			{
-				method: "POST",
-				body: JSON.stringify(payload),
-				headers: {
-					"Content-Type": "application/json",
-				},
-			},
-		);
-		const parserStream = parser();
-		if(res.body) {
-			res.body.pipeTo(parserStream as any as WritableStream<Uint8Array>);
-		}
-		let isText = false;
-		let text = "";
-		let iscandidatesTokenCount = false;
-		for await (const chunk of parserStream) {
-			if (chunk.name === "keyValue" && chunk.value === "text") {
-				isText = true;
-			}
-			if (isText && chunk.name === "stringValue") {
-				isText = false;
-				text = chunk.value;
-			}
-			if (chunk.name === "keyValue" && chunk.value === "candidatesTokenCount") {
-				iscandidatesTokenCount = true;
-			}
-			if (iscandidatesTokenCount && chunk.name === "numberValue") {
-				iscandidatesTokenCount = false;
-				yield {
-					tokens: Number(chunk.value),
-					content: text,
-				};
-			}
-			if (chunk.name.includes("Value")) {
-				console.debug(chunk.name.slice(0, -5), chunk.value);
-			}
+		const res = await ai
+			.getGenerativeModel({ model: model })
+			.generateContentStream(chat);
+		for await (const chunk of res.stream) {
+			yield {
+				tokens: 0,
+				content: chunk.text(),
+			};
 		}
 	} catch (e) {
 		console.warn(e);
