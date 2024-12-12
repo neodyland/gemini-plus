@@ -60,8 +60,9 @@ async function* generateGeminiContent(
 			},
 		);
 		const parserStream = parser();
-		//@ts-ignore
-		res.body.pipe(parserStream);
+		if(res.body) {
+			res.body.pipeTo(parserStream as any as WritableStream<Uint8Array>);
+		}
 		let isText = false;
 		let text = "";
 		let iscandidatesTokenCount = false;
