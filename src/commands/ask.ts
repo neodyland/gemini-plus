@@ -75,29 +75,10 @@ export const ask: Command = {
 			},
 		];
 		const gen = await model.generate(chat, system || undefined);
-		let tokens = 0;
-		let lastTokens = 0;
 		let content = "";
-		for await (const { tokens: t, content: c } of gen) {
-			tokens += t;
+		for await (const c of gen) {
 			content += c;
-			if (tokens - lastTokens > 100) {
-				await i.editReply(
-					content.length < 2000
-						? content
-						: {
-								files: [
-									{
-										attachment: Buffer.from(content),
-										name: "output.txt",
-									},
-								],
-							},
-				);
-				lastTokens = tokens;
-			}
 		}
-		content = `Tokens: ${tokens}\n${content}`;
 		await i.editReply(
 			content.length < 2000
 				? content

@@ -59,16 +59,9 @@ setInterval(() => {
 					} catch {
 						console.error("Failed to fetch message");
 					}
-					let tokens = 0;
-					let lastTokens = 0;
 					let contents = "";
-					for await (const { tokens: t, content: c } of res) {
-						tokens += t;
+					for await (const c of res) {
 						contents += c;
-						if (tokens - lastTokens > 100) {
-							await msg?.edit(contents);
-							lastTokens = tokens;
-						}
 					}
 					const payload: MessageEditOptions = {};
 					if (contents.length < 2000) {

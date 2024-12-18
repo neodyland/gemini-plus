@@ -21,7 +21,7 @@ async function* generateGeminiContent(
 		const res = await ai
 			.getGenerativeModel({ model: model })
 			.generateContentStream({
-				tools: [{ codeExecution: {}, googleSearchRetrieval: {} }],
+				tools: [{ codeExecution: {} }],
 				safetySettings: [
 					HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
 					HarmCategory.HARM_CATEGORY_HARASSMENT,
@@ -48,10 +48,7 @@ async function* generateGeminiContent(
 				})),
 			});
 		for await (const chunk of res.stream) {
-			yield {
-				tokens: 0,
-				content: chunk.text(),
-			};
+			yield chunk.text();
 		}
 	} catch (e) {
 		console.warn(e);

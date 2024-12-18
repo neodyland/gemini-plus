@@ -18,15 +18,7 @@ export interface Chat {
 }
 
 export interface ChatModel {
-	generate(
-		chat: Chat[],
-		system?: string,
-	): Promise<
-		AsyncGenerator<{
-			tokens: number;
-			content: string;
-		}>
-	>;
+	generate(chat: Chat[], system?: string): Promise<AsyncGenerator<string>>;
 	name: string;
 	id: string;
 }
