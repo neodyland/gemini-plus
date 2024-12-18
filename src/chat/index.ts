@@ -14,7 +14,7 @@ export interface Chat {
 	attachment?: {
 		mime: string;
 		data: string;
-	}[]; // base64
+	}[];
 }
 
 export interface ChatModel {
